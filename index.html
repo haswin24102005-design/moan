@@ -3,119 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haswin.xyz | Group</title>
+    <title>The Truth</title>
     <style>
-        :root { --accent: #00f2ff; --bg: #0a0a0a; --panel: #161616; }
-        body { font-family: sans-serif; background: var(--bg); color: white; margin: 0; text-align: center; }
-        .hidden { display: none; }
-        
-        /* Selection Page */
-        .container { padding: 50px 20px; }
-        .card { background: var(--panel); border: 1px solid #333; padding: 30px; border-radius: 20px; cursor: pointer; width: 180px; display: inline-block; margin: 10px; transition: 0.3s; }
-        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
 
-        /* Profile Page */
-        #profile-pic { width: 280px; height: 280px; object-fit: cover; border-radius: 50%; border: 4px solid var(--accent); cursor: pointer; margin: 20px auto; display: block; }
-        #profile-pic:active { transform: scale(0.95); }
+        .main-btn {
+            padding: 25px 50px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+            background: #00f2ff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            z-index: 10;
+        }
 
-        /* Notes Section */
-        .notes-area { background: var(--panel); max-width: 450px; margin: 30px auto; padding: 20px; border-radius: 20px; border: 1px solid #222; }
-        #note-list { text-align: left; max-height: 200px; overflow-y: auto; margin-bottom: 15px; }
-        .note-bubble { background: #222; padding: 10px; margin-bottom: 8px; border-radius: 8px; font-size: 14px; border-left: 3px solid var(--accent); }
-        .input-group { display: flex; gap: 10px; }
-        input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #000; color: white; }
-        .btn { background: var(--accent); color: black; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .main-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.6);
+        }
 
-        /* Popup */
-        #popup-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); z-index: 99; }
-        #popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; color: black; padding: 50px; border-radius: 25px; z-index: 100; box-shadow: 0 0 50px var(--accent); }
+        .main-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Stylized Popups */
+        .prank-popup {
+            position: absolute;
+            background: white;
+            color: black;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            pointer-events: none;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
     </style>
 </head>
 <body>
 
-    <div id="page1" class="container">
-        <h1 style="color: var(--accent); font-size: 35px;">HASWIN.XYZ</h1>
-        <p>Choose your profile</p>
-        <div class="card" onclick="openProfile('Friend 1', 'f1.jpg', '555-0101')"><h3>FRIEND 1</h3></div>
-        <div class="card" onclick="openProfile('Friend 2', 'f2.jpg', '555-0102')"><h3>FRIEND 2</h3></div>
-        <div class="card" onclick="openProfile('Friend 3', 'f3.jpg', '555-0103')"><h3>FRIEND 3</h3></div>
-    </div>
-
-    <div id="page2" class="container hidden">
-        <h1 id="friend-name" style="text-transform: uppercase;"></h1>
-        <img id="profile-pic" src="" alt="Click Image">
-        <p style="color: #666;">(Click photo 1, 2, or 3 times)</p>
-
-        <div class="notes-area">
-            <div id="note-list"></div>
-            <div class="input-group">
-                <input type="text" id="note-in" placeholder="Write a note...">
-                <button class="btn" onclick="saveNote()">POST</button>
-            </div>
-        </div>
-        <button onclick="location.reload()" style="background:none; border:none; color:#555; cursor:pointer;">← BACK</button>
-    </div>
-
-    <div id="popup-overlay" onclick="closePopup()"></div>
-    <div id="popup">
-        <h1 id="secret-word">LEGENDARY</h1>
-        <button class="btn" onclick="closePopup()">CLOSE</button>
-    </div>
+    <button class="main-btn" onclick="triggerPrank()">Who is Thadrkuri?</button>
 
     <script>
-        let clicks = 0;
-        let selectedFriend = "";
-        let selectedPhone = "";
-        const MY_SECRET_WORD = "BINGO!"; // <--- Write your word here
+        // List of websites to redirect to
+        const sites = [
+            "https://en.wikipedia.org/wiki/Vijay_(actor)",
+            "https://www.google.com/search?q=Vijay+news",
+            "https://twitter.com/search?q=Vijay"
+        ];
 
-        function openProfile(name, img, phone) {
-            selectedFriend = name;
-            selectedPhone = phone;
-            document.getElementById('page1').classList.add('hidden');
-            document.getElementById('page2').classList.remove('hidden');
-            document.getElementById('friend-name').innerText = name;
-            document.getElementById('profile-pic').src = img;
-            document.getElementById('secret-word').innerText = MY_SECRET_WORD;
-            displayNotes();
-        }
+        function triggerPrank() {
+            // 1. Play the sound
+            const audio = new Audio('moan.mp3');
+            audio.play();
 
-        // 3-CLICK LOGIC
-        document.getElementById('profile-pic').onclick = function() {
-            clicks++;
-            if (clicks === 1) {
-                new Audio('moan.mp3').play();
-            } else if (clicks === 2) {
-                alert("Phone: " + selectedPhone);
-            } else if (clicks === 3) {
-                document.getElementById('popup').style.display = 'block';
-                document.getElementById('popup-overlay').style.display = 'block';
-                clicks = 0; // Reset
+            // 2. Create popups on screen
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    createPopup("ALERT!");
+                }, i * 150);
             }
-        };
 
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
-            document.getElementById('popup-overlay').style.display = 'none';
+            // 3. Redirect to a random site after a short delay
+            setTimeout(() => {
+                const randomSite = sites[Math.floor(Math.random() * sites.length)];
+                window.open(randomSite, '_blank');
+            }, 1000);
         }
 
-        // LOCAL STORAGE NOTE LOGIC
-        function saveNote() {
-            const input = document.getElementById('note-in');
-            if(!input.value) return;
+        function createPopup(text) {
+            const popup = document.createElement('div');
+            popup.className = 'prank-popup';
+            popup.innerText = text;
             
-            let notes = JSON.parse(localStorage.getItem('notes_' + selectedFriend) || "[]");
-            notes.push(input.value);
-            localStorage.setItem('notes_' + selectedFriend, JSON.stringify(notes));
+            // Random position
+            const x = Math.random() * (window.innerWidth - 150);
+            const y = Math.random() * (window.innerHeight - 50);
             
-            input.value = "";
-            displayNotes();
-        }
-
-        function displayNotes() {
-            const list = document.getElementById('note-list');
-            let notes = JSON.parse(localStorage.getItem('notes_' + selectedFriend) || "[]");
-            list.innerHTML = notes.map(n => `<div class="note-bubble">${n}</div>`).join('');
-            list.scrollTop = list.scrollHeight;
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+            
+            document.body.appendChild(popup);
         }
     </script>
 </body>
