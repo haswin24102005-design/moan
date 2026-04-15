@@ -1,1 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friend Select</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #121212; color: white; }
+        .hidden { display: none; }
+        .container { padding: 50px; }
+        .friend-btn { padding: 20px; margin: 10px; font-size: 20px; cursor: pointer; }
+        #profile-pic { width: 300px; height: 300px; object-fit: cover; border-radius: 50%; border: 5px solid #fff; cursor: pointer; transition: transform 0.2s; }
+        #profile-pic:active { transform: scale(0.95); }
+        .notes-section { margin-top: 50px; background: #222; padding: 20px; border-radius: 10px; width: 80%; margin-inline: auto; }
+        #note-list { text-align: left; max-height: 300px; overflow-y: auto; }
+        .note-item { border-bottom: 1px solid #444; padding: 10px; }
+        #popup { display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; color: black; padding: 50px; border-radius: 20px; box-shadow: 0 0 20px rgba(255,255,255,0.5); z-index: 100; }
+    </style>
+</head>
+<body>
 
+    <div id="selection-page" class="container">
+        <h1>Who are you looking for?</h1>
+        <button class="friend-btn" onclick="showProfile('Friend 1', 'f1.jpg', '555-0101')">Friend 1</button>
+        <button class="friend-btn" onclick="showProfile('Friend 2', 'f2.jpg', '555-0102')">Friend 2</button>
+        <button class="friend-btn" onclick="showProfile('Friend 3', 'f3.jpg', '555-0103')">Friend 3</button>
+    </div>
+
+    <div id="profile-page" class="container hidden">
+        <h1 id="friend-name"></h1>
+        <img id="profile-pic" src="" alt="Click me!">
+        <p>Click the photo to interact...</p>
+        <button onclick="location.reload()">← Back</button>
+
+        <div class="notes-section">
+            <h3>Community Notes</h3>
+            <div id="note-list"></div>
+            <input type="text" id="note-input" placeholder="Leave a note...">
+            <button onclick="saveNote()">Post</button>
+        </div>
+    </div>
+
+    <div id="popup">
+        <h2 id="popup-text">THE SECRET WORD</h2>
+        <button onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+        let clickCount = 0;
+        let currentFriend = "";
+        let currentPhone = "";
+
+        function showProfile(name, img, phone) {
+            currentFriend = name;
+            currentPhone = phone;
+            document.getElementById('selection-page').classList.add('hidden');
+            document.getElementById('profile-page').classList.remove('hidden');
+            document.getElementById('friend-name').innerText = name;
+            document.getElementById('profile-pic').src = img;
+            loadNotes();
+        }
+
+        document.getElementById('profile-pic').addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 1) {
+                let audio = new Audio('moan.mp3'); 
+                audio.play();
+            } else if (clickCount === 2) {
+                alert("Phone Number: " + currentPhone);
+            } else if (clickCount === 3) {
+                document.getElementById('popup').style.display = 'block';
+                clickCount = 0; 
+            }
+        });
+
+        function closePopup() { document.getElementById('popup').style.display = 'none'; }
+
+        // NOTE LOGIC (LocalStorage version for testing - Firebase recommended for public)
+        function saveNote() {
+            const input = document.getElementById('note-input');
+            if(!input.value) return;
+            const notes = JSON.parse(localStorage.getItem('notes_' + currentFriend) || "[]");
+            notes.push(input.value);
+            localStorage.setItem('notes_' + currentFriend, JSON.stringify(notes));
+            input.value = "";
+            loadNotes();
+        }
+
+        function loadNotes() {
+            const list = document.getElementById('note-list');
+            const notes = JSON.parse(localStorage.getItem('notes_' + currentFriend) || "[]");
+            list.innerHTML = notes.map(n => `<div class="note-item">${n}</div>`).join('');
+        }
+    </script>
+</body>
+</html>
